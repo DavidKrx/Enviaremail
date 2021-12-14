@@ -18,7 +18,7 @@ public class App extends Application{
 		control=new  EnviarController();		
 		
 		primaryStage.setTitle("Enviar email");
-		primaryStage.getIcons().add(new Image("source\\email-icon.png"));
+		primaryStage.getIcons().add(new Image("resource\\email-icon.png"));
 		primaryStage.setScene(new Scene(control.getView()));
 		primaryStage.show();
 	}
