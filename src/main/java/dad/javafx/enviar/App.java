@@ -2,7 +2,8 @@ package dad.javafx.enviar;
 
 
 import javafx.application.Application;
-
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -18,7 +19,7 @@ public class App extends Application{
 		control=new  EnviarController();		
 		
 		primaryStage.setTitle("Enviar email");
-		primaryStage.getIcons().add(new Image("source\\email-icon.png"));
+		primaryStage.getIcons().add(new Image("resource\\email-icon.png"));
 		primaryStage.setScene(new Scene(control.getView()));
 		primaryStage.show();
 	}
@@ -30,6 +31,7 @@ public class App extends Application{
 		alerta.setTitle(header);
 		alerta.setHeaderText(headerContent);
 		alerta.showAndWait();
+	
 	}
     public static void reject(String titulo,String header, String content) {
   		Alert alerta=new Alert(AlertType.ERROR);
@@ -37,5 +39,6 @@ public class App extends Application{
   		alerta.setHeaderText(header);
   		alerta.setContentText(content);
   		alerta.showAndWait();
+		
   	}
 }

@@ -2,6 +2,7 @@ package dad.javafx.enviar;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
@@ -16,12 +17,15 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextArea;
@@ -103,22 +107,33 @@ public class EnviarController implements Initializable{
     }
 
     @FXML
-    void OnEnviarAction(ActionEvent event) throws EmailException {
+    void OnEnviarAction(ActionEvent event){
+    	Task<Void> sendTask = new Task<Void>() {
+			@Override
+			protected Void call() throws Exception {
+				email.setHostName(servidor.getValue());
+		    	email.setSmtpPort(Integer.parseInt(puerto.getValue()));
+		    	email.setAuthentication(remitente.getValue(), contrasena.getValue());
+		    	email.setSSLOnConnect(conexion.getValue());
+		    	email.setFrom(remitente.getValue());
+		    	email.addTo(destinatario.getValue());
+		    	email.setSubject(asunto.getValue());
+		    	email.setMsg(mensaje.getValue());
+		    	email.send();
+		    	
+		    	return null;
+			}
+		};
+		sendTask.setOnSucceeded(e->{
+			App.confirm("Mensaje enviado","Mensaje enviado correctamente a "+ destinatario.getValue());
+			});
+		
+		sendTask.setOnFailed(e-> {
+			App.reject("Mensaje no enviado","No se pudo enviar el email","Invalid message supplied");	
+			});
 
-    try {
-       	email.setHostName(servidor.getValue());
-    	email.setSmtpPort(Integer.parseInt(puerto.getValue()));
-    	email.setAuthentication(remitente.getValue(), contrasena.getValue());
-    	email.setSSLOnConnect(conexion.getValue());
-    	email.setFrom(remitente.getValue());
-    	email.addTo(destinatario.getValue());
-    	email.setSubject(asunto.getValue());
-    	email.setMsg(mensaje.getValue());
-    	email.send();
-    	App.confirm("Mensaje enviado","Mensaje enviado correctamente a "+ destinatario.getValue());	
-	} catch (Exception e) {
-		App.reject("Mensaje no enviado","No se pudo enviar el email","Invalid message supplied");	
-	}
+			new Thread(sendTask).start();
+
     	}
 
 	
